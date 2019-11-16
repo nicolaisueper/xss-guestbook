@@ -1,0 +1,143 @@
+*, *:before, *:after {
+    box-sizing: border-box;
+}
+
+img {
+    max-width: 60vw;
+    border: 1px solid darkgray;
+    border-radius: 8px;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    font-family: "Verdana", sans-serif;
+}
+
+.app {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: crimson;
+    color: white;
+    height: 3rem;
+    width: 100vw;
+}
+
+.header h1 {
+    font-size: 1.5rem;
+}
+
+.entries {
+    padding: 1rem 10px;
+    overflow-y: scroll;
+    flex: 1 1 auto;
+}
+
+.entries * {
+    overflow-anchor: none;
+}
+
+.anchor {
+    overflow-anchor: auto;
+    height: 1px;
+}
+
+.entry {
+    position: relative;
+    background: lightgray;
+    color: black;
+    border: 1px solid lightgray;
+    border-radius: 8px;
+    padding: 10px 20px;
+    margin-bottom: 25px;
+}
+
+.entry:after {
+    position: absolute;
+    content: " ";
+    background: lightgray;
+    display: block;
+    width: 20px;
+    height: 20px;
+    bottom: -5px;
+    right: 5px;
+    transform: rotate(45deg);
+    z-index: -1;
+}
+
+.entry.foreign {
+    background: teal;
+    border-color: teal;
+    color: white;
+}
+.entry.foreign:after {
+    right: unset;
+    left: 5px;
+    background: teal;
+    border-color: teal;
+}
+
+.entry .text {
+    margin-bottom: 1rem;
+    overflow-wrap: break-word;
+}
+.entry .author {
+    color: darkslategray;
+    font-size: .8rem;
+}
+
+.write-entry {
+    background: white;
+    display: inline-flex;
+    justify-content: center;
+    align-items: flex-end;
+
+    width: 100vw;
+    margin: 0;
+    z-index: 2;
+
+    padding: 0 10px 10px;
+}
+
+.write-text {
+    flex: 1 0 auto;
+    font-size: 1rem;
+    height: 100%;
+    padding-left: 10px;
+    text-overflow: ellipsis;
+    resize: none;
+
+    font-family: monospace;
+
+    border: 1px solid crimson;
+    border-radius: 8px;
+    border-top-right-radius: unset;
+    border-bottom-right-radius: unset;
+}
+.write-submit {
+    flex: 0 0 44px;
+    height: 100%;
+    font-size: 1.5rem;
+
+    color: white;
+    background: crimson;
+
+    border: 1px solid crimson;
+    border-radius: 8px;
+    border-left: unset;
+    border-top-left-radius: unset;
+    border-bottom-left-radius: unset;
+}

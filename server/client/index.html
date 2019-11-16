@@ -1,0 +1,113 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+          name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <title>Guestbook</title>
+    <link href="css/layout.css" rel="stylesheet">
+    <link href="css/loading-spinner.css" rel="stylesheet">
+</head>
+<body>
+<div class="app">
+    <header class="header">
+        <h1>Guestbook</h1>
+    </header>
+    <div class="entries">
+        <div class="lds-spinner-wrapper">
+            <div class="lds-spinner">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+    </div>
+    <form action="" class="write-entry">
+        <textarea class="write-text" name="entryText" placeholder="Write an entry" type="text"></textarea>
+        <button class="write-submit" type="submit">&rarr;</button>
+    </form>
+</div>
+
+<!-- Methods -->
+<script>
+  const getEntries = () => new Promise(resolve => setTimeout(() => fetch("/api")
+    .then(res => resolve(res.json())), 500));
+
+  const postEntry = (text, author) => fetch("/api", {
+    headers: {"Content-Type": "application/json"},
+    method: "POST",
+    body: JSON.stringify({text, author})
+  }).then(res => res.json());
+
+  const entryTemplate = (entry) => {
+    const isForeignEntry = entry.author !== USER;
+    const dateTimeFormatter = new Intl.DateTimeFormat("de", {
+      hour12: false,
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    });
+
+    let html = "";
+    html += `<div class='entry ${isForeignEntry ? "foreign" : ""}'>`;
+    html += "  <div class='text'>" + entry.text + "</div>";
+    html += "  <span class='author'>" + entry.author + " at " + dateTimeFormatter.format(entry.date) + "</span>";
+    html += "</div>";
+    return html;
+  };
+
+  const spinnerTemplate = () => `<div class="lds-spinner-wrapper"><div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>`;
+
+  const renderEntries = (entries, container) => {
+    container.innerHTML = entries.map(entryTemplate).join("");
+  };
+
+  const initializeAutoResizeInput = (inputContainer) => {
+    function onResize() {
+      this.style.height = "auto";
+      this.style.height = this.clientHeight + "px"
+    }
+    inputContainer.setAttribute('style', 'height:' + (inputContainer.clientHeight) + 'px;max-height:20vh;overflow-y:hidden;');
+    inputContainer.addEventListener("input", onResize);
+  }
+</script>
+
+<script>
+  const USER = localStorage.getItem("current_user") || prompt("Mhh what's yo name?");
+  localStorage.setItem("current_user", USER);
+
+  const entriesContainer = document.querySelector(".entries");
+  const submitForm = document.querySelector(".write-entry");
+  const inputContainer = document.querySelector(".write-text");
+
+  initializeAutoResizeInput(inputContainer);
+
+  submitForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    entriesContainer.innerHTML += spinnerTemplate();
+    const text = event.target["entryText"].value;
+    await postEntry(text, USER);
+    await getEntries()
+      .then(entries => renderEntries(entries, entriesContainer))
+      .then(() => entriesContainer.scrollTop = entriesContainer.scrollHeight)
+      .then(() => {
+        event.target.reset();
+        event.target["entryText"].style.height = "auto";
+      });
+  });
+
+  getEntries()
+    .then(entries => renderEntries(entries, entriesContainer))
+    .then(() => setTimeout(() => entriesContainer.scrollTop = entriesContainer.scrollHeight, 50));
+</script>
+</body>
+</html>
